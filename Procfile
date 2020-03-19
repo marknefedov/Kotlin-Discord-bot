@@ -1,0 +1,1 @@
+worker: sh build/scripts/DiscordBot
