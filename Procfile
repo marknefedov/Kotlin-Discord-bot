@@ -1,1 +1,1 @@
-worker: sh build/scripts/DiscordBot
+worker: java -jar build/libs/DiscordBot-0.1.jar
