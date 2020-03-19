@@ -19,7 +19,7 @@ import kotlin.concurrent.schedule
 
 const val recordsFolder = "records/"
 
-class RecordCommandHandler() : ListenerAdapter()
+class RecordCommandHandler : ListenerAdapter()
 {
     private var isRecording = false
     private var recorder = AudioRecorder()
@@ -76,7 +76,7 @@ class RecordCommandHandler() : ListenerAdapter()
     }
 }
 
-class AudioRecorder() : AudioReceiveHandler
+class AudioRecorder : AudioReceiveHandler
 {
     private var buffer = mutableListOf<Byte>()
     override fun canReceiveCombined(): Boolean {
@@ -104,6 +104,11 @@ class AudioRecorder() : AudioReceiveHandler
         val attrs = EncodingAttributes()
         attrs.format = "mp3"
         attrs.audioAttributes = audio
+
+        val directory = File(recordsFolder)
+        if (!directory.exists())
+            directory.mkdir()
+
         AudioSystem.write(audioStream, AudioFileFormat.Type.WAVE, wav)
         val mp3 = File("$filename.mp3")
         encoder.encode(MultimediaObject(wav), mp3, attrs)
