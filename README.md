@@ -1,4 +1,4 @@
-###Simple Discord bot
+# Simple Discord bot
 A simple bot for recording voice chats.
 
 Usage:
