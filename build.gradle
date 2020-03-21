@@ -30,6 +30,7 @@ jar {
 }
 
 task fatJar(type: Jar) {
+    with jar
     manifest {
         attributes 'Main-Class': 'MainKt'
     }
