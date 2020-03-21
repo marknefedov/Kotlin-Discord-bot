@@ -1,1 +1,1 @@
-worker: java -jar build/libs/DiscordBot-0.1.jar
+worker: java -jar build/libs/DiscordBot-master.jar

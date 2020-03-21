@@ -12,44 +12,51 @@ import java.io.ByteArrayInputStream
 import java.io.File
 import java.time.LocalDateTime
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.sound.sampled.AudioFileFormat
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 import kotlin.concurrent.schedule
 
+
 const val recordsFolder = "records/"
 
 class RecordCommandHandler : ListenerAdapter()
 {
-    private var isRecording = false
-    private var recorder = AudioRecorder()
-    private var stopTask : TimerTask? = null
+    private var isRecording = mutableMapOf<Long, Boolean>()
+    private var recorders = mutableMapOf<Long, AudioRecorder>()
+    private var stopTask = mutableMapOf<Long, TimerTask?>()
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         super.onGuildMessageReceived(event)
-        if (!isRecording && event.message.contentRaw.startsWith("::record"))
+        val guildIdLong = event.guild.idLong
+        val guildMemberId = event.author.id
+        if (!isRecording.getOrPut(guildIdLong){false} && event.message.contentRaw.startsWith("::record"))
         {
-            if ((event.guild.getMemberById(event.author.id)?.voiceState ?: return).inVoiceChannel())
+            if ((event.guild.getMemberById(guildMemberId)?.voiceState ?: return).inVoiceChannel())
             {
                 var scheduleTime = 300000L
-                stopTask?.cancel()
-                isRecording = true
-                event.guild.audioManager.receivingHandler = recorder
-                event.guild.audioManager.openAudioConnection(event.guild.getMemberById(event.author.id)?.voiceState!!.channel)
-
+                stopTask[guildIdLong]?.cancel()
+                isRecording[guildIdLong] = true
+                event.guild.audioManager.receivingHandler = recorders.getOrPut(guildIdLong){AudioRecorder()}
+                event.guild.audioManager.openAudioConnection((event.guild.getMemberById(guildMemberId)?.voiceState ?: return).channel)
                 val splitMessage = event.message.contentRaw.split(" ")
                 if (splitMessage.size > 1 && splitMessage[1].toLongOrNull() != null) {
                     scheduleTime = splitMessage[1].toLong()
                     scheduleStop(event.message.textChannel, scheduleTime)
                 }else scheduleStop(event.message.textChannel, scheduleTime)
-                val displayTime = scheduleTime/1000
-                event.channel.sendMessage("Starting a $displayTime second recording. Use `::stop` to stop record earlier.").queue()
+                val hms = String.format(
+                    "%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(scheduleTime),
+                    TimeUnit.MILLISECONDS.toMinutes(scheduleTime) % TimeUnit.HOURS.toMinutes(1),
+                    TimeUnit.MILLISECONDS.toSeconds(scheduleTime) % TimeUnit.MINUTES.toSeconds(1)
+                )
+                event.channel.sendMessage("Starting a $hms long recording. Use `::stop` to stop record earlier.").queue()
             }
         }
 
-        if (isRecording && event.message.contentRaw.startsWith("::stop"))
+        if (isRecording.getOrPut(guildIdLong){false} && event.message.contentRaw.startsWith("::stop"))
         {
-            if ((event.guild.getMemberById(event.author.id)?.voiceState ?: return).inVoiceChannel())
+            if ((event.guild.getMemberById(guildMemberId)?.voiceState ?: return).inVoiceChannel())
             {
                 stopRecord(event.message.textChannel)
             }
@@ -58,19 +65,20 @@ class RecordCommandHandler : ListenerAdapter()
 
     private fun stopRecord(textChannel: TextChannel)
     {
-        isRecording = false
+        val guildIdLong = textChannel.guild.idLong
+        isRecording[guildIdLong] = false
         textChannel.guild.audioManager.closeAudioConnection()
         val filename = recordsFolder + LocalDateTime.now().toString() + textChannel.guild.id
-        recorder.endRecord(filename)
+        (recorders[guildIdLong] ?: return).endRecord(filename)
         val record = File("$filename.mp3")
         textChannel.sendFile(record).queue()
         record.delete()
-        stopTask?.cancel()
+        stopTask[guildIdLong]?.cancel()
     }
 
     private fun scheduleStop(textChannel: TextChannel, time : Long)
     {
-        stopTask = Timer("Limit records", false).schedule(time) {
+        stopTask[textChannel.guild.idLong] = Timer("Limit records", false).schedule(time) {
             stopRecord(textChannel)
         }
     }
