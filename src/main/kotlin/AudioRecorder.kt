@@ -42,7 +42,7 @@ class RecordCommandHandler : ListenerAdapter()
                 event.guild.audioManager.openAudioConnection((event.guild.getMemberById(guildMemberId)?.voiceState ?: return).channel)
                 val splitMessage = event.message.contentRaw.split(" ")
                 if (splitMessage.size > 1 && splitMessage[1].toLongOrNull() != null) {
-                    scheduleTime = splitMessage[1].toLong()
+                    scheduleTime = splitMessage[1].toLong() * 1000 // to seconds
                     scheduleStop(event.message.textChannel, scheduleTime)
                 }else scheduleStop(event.message.textChannel, scheduleTime)
                 val hms = String.format(
