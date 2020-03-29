@@ -25,7 +25,8 @@ fun main(args : Array<String>) {
     JDABuilder(token).apply {
         addEventListeners(
             RecordCommandHandler(),
-            InstantReplayCommandHandler()
+            InstantReplayCommandHandler(),
+            HelpCommand()
         )
         setAutoReconnect(true)
         build()

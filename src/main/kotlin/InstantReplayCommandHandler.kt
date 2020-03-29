@@ -11,22 +11,23 @@ const val bufferSize = 50000000
 class InstantReplayCommandHandler : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         super.onGuildMessageReceived(event)
-        if (event.message.contentRaw.startsWith(":!record") && event.member?.voiceState?.inVoiceChannel() == true) {
-            if (event.guild.audioManager.receivingHandler == null) {
-                event.guild.audioManager.receivingHandler = InstantReplayAudioHandler()
+        when {
+            event.message.contentRaw == "::irecord" && event.member?.voiceState?.inVoiceChannel() == true -> {
+                if (event.guild.audioManager.receivingHandler == null) {
+                    event.guild.audioManager.receivingHandler = InstantReplayAudioHandler()
+                }
+                event.guild.audioManager.openAudioConnection(event.member?.voiceState?.channel)
             }
-            event.guild.audioManager.openAudioConnection(event.member?.voiceState?.channel)
-        }
-
-        if (event.message.contentRaw.startsWith(":!replay")) {
-            val replayAudioHandler = event.guild.audioManager.receivingHandler as? InstantReplayAudioHandler ?: return
-            val wavRecord = createWAVFile(
-                replayAudioHandler.getRecordBytes().toTypedArray().copyOf(),
-                "${LocalDateTime.now()}${event.guild.id}"
-            )
-            val mp3Compressed = convertToMP3(wavRecord)
-            wavRecord.delete()
-            event.message.textChannel.sendFile(mp3Compressed).submit().thenRunAsync { mp3Compressed.delete() }
+            event.message.contentRaw =="::ireplay" -> {
+                val replayAudioHandler = event.guild.audioManager.receivingHandler as? InstantReplayAudioHandler ?: return
+                val wavRecord = createWAVFile(
+                    replayAudioHandler.getRecordBytes().toTypedArray().copyOf(),
+                    "${LocalDateTime.now()}${event.guild.id}"
+                )
+                val mp3Compressed = convertToMP3(wavRecord)
+                wavRecord.delete()
+                event.message.textChannel.sendFile(mp3Compressed).submit().thenRunAsync { mp3Compressed.delete() }
+            }
         }
     }
 
