@@ -16,3 +16,7 @@ gradle-app.setting
 # IDE
 .idea/
 *.iml
+
+#created by bot
+temp/
+records/
