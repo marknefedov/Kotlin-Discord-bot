@@ -1,5 +1,6 @@
 import net.dv8tion.jda.api.audio.AudioReceiveHandler
 import net.dv8tion.jda.api.audio.CombinedAudio
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.apache.commons.collections4.queue.CircularFifoQueue
@@ -26,6 +27,15 @@ class InstantReplayCommandHandler : ListenerAdapter() {
             val mp3Compressed = convertToMP3(wavRecord)
             wavRecord.delete()
             event.message.textChannel.sendFile(mp3Compressed).submit().thenRunAsync { mp3Compressed.delete() }
+        }
+    }
+
+    override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
+        super.onGuildVoiceLeave(event)
+        if (event.member.id == clientId)
+        {
+            println("Bot leave from: ${event.channelLeft.name}")
+            event.guild.audioManager.receivingHandler = null
         }
     }
 }

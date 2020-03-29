@@ -14,6 +14,7 @@ dependencies {
     compile "net.dv8tion:JDA:4.1.1_101"
     compile group: 'ws.schild', name: 'jave-all-deps', version: '2.7.3'
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.13.1'
 }
 
 compileKotlin {
