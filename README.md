@@ -1,5 +1,6 @@
 # Voice record Discord bot in Kotlin [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y61K34E)
 ![](https://github.com/markusgod/Simple-Discord-bot/workflows/masterci/badge.svg) 
+
 A simple bot for recording voice chats.
 
 For simple recording:
