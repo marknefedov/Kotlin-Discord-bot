@@ -10,7 +10,10 @@ fun main(args : Array<String>) {
         }
     }
     JDABuilder(token).apply {
-        addEventListeners(RecordCommandHandler())
+        addEventListeners(
+            RecordCommandHandler(),
+            InstantReplayCommandHandler()
+        )
         build()
     }
 }
