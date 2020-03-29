@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.apache.commons.collections4.queue.CircularFifoQueue
 import java.time.LocalDateTime
 
-const val bufferSize = 200000000
+const val bufferSize = 50000000
 
 class InstantReplayCommandHandler : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
