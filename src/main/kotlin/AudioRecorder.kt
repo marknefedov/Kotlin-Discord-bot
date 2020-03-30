@@ -88,7 +88,7 @@ class AudioRecorder : AudioReceiveHandler
 
     fun endRecord(filename : String) : File
     {
-        val wav = createWAVFile(buffer.toTypedArray(), filename)
+        val wav = createWAVFile(buffer, filename)
         val mp3file = convertToMP3(wav)
         wav.delete()
         return mp3file

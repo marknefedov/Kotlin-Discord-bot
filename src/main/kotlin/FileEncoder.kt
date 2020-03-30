@@ -11,7 +11,7 @@ import javax.sound.sampled.AudioSystem
 
 const val tempFolder = "temp"
 
-fun createWAVFile(buffer: Array<Byte>, filename: String): File {
+fun createWAVFile(buffer: Collection<Byte>, filename: String): File {
     val directory = File(tempFolder)
     if (!directory.exists())
         directory.mkdir()

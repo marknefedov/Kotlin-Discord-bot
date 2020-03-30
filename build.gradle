@@ -13,7 +13,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "net.dv8tion:JDA:4.1.1_101"
     compile group: 'ws.schild', name: 'jave-all-deps', version: '2.7.3'
-    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+    implementation("com.google.guava:guava:28.2-jre")
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 }
 
