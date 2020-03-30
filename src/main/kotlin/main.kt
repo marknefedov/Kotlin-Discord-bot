@@ -1,4 +1,5 @@
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.utils.Compression
 
 lateinit var clientId : String
 
@@ -23,6 +24,7 @@ fun main(args : Array<String>) {
 
     println("Starting bot")
     JDABuilder(token).apply {
+        setCompression(Compression.ZLIB)
         addEventListeners(
             RecordCommandHandler(),
             InstantReplayCommandHandler(),

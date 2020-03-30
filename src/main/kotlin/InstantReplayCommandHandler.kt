@@ -6,20 +6,23 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.apache.commons.collections4.queue.CircularFifoQueue
 import java.time.LocalDateTime
 
-const val bufferSize = 50000000
+const val bufferSize = 25000000
 
 class InstantReplayCommandHandler : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
         super.onGuildMessageReceived(event)
+        val audioManager = event.guild.audioManager
         when {
             event.message.contentRaw == "::irecord" && event.member?.voiceState?.inVoiceChannel() == true -> {
-                if (event.guild.audioManager.receivingHandler == null) {
-                    event.guild.audioManager.receivingHandler = InstantReplayAudioHandler()
+                if (audioManager.receivingHandler == null) {
+                    audioManager.receivingHandler = InstantReplayAudioHandler()
                 }
-                event.guild.audioManager.openAudioConnection(event.member?.voiceState?.channel)
+                val recordChannel = event.member?.voiceState?.channel
+                audioManager.openAudioConnection(recordChannel)
+                println("Start replay recording on ${event.guild.name} | ${recordChannel?.name}")
             }
             event.message.contentRaw =="::ireplay" -> {
-                val replayAudioHandler = event.guild.audioManager.receivingHandler as? InstantReplayAudioHandler ?: return
+                val replayAudioHandler = audioManager.receivingHandler as? InstantReplayAudioHandler ?: return
                 val wavRecord = createWAVFile(
                     replayAudioHandler.getRecordBytes().toTypedArray().copyOf(),
                     "${LocalDateTime.now()}${event.guild.id}"

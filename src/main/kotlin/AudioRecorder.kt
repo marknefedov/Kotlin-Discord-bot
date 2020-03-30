@@ -30,7 +30,8 @@ class RecordCommandHandler : ListenerAdapter()
                     stopTask[guildIdLong]?.cancel()
                     isRecording[guildIdLong] = true
                     guild.audioManager.receivingHandler = recorders.getOrPut(guildIdLong){AudioRecorder()}
-                    guild.audioManager.openAudioConnection((guild.getMemberById(guildMemberId)?.voiceState ?: return).channel)
+                    val recordChannel = (guild.getMemberById(guildMemberId)?.voiceState ?: return).channel
+                    guild.audioManager.openAudioConnection(recordChannel)
                     val splitMessage = message.contentRaw.split(" ")
                     if (splitMessage.size > 1 && splitMessage[1].toLongOrNull() != null) {
                         scheduleTime = splitMessage[1].toLong() * 1000 // to seconds
@@ -42,6 +43,7 @@ class RecordCommandHandler : ListenerAdapter()
                         TimeUnit.MILLISECONDS.toSeconds(scheduleTime) % TimeUnit.MINUTES.toSeconds(1)
                     )
                     event.channel.sendMessage("Starting a $hms long recording. Use `::stop` to stop record earlier.").queue()
+                    println("Start recording on ${guild.name} | ${recordChannel?.name}")
                 }
             }
             isRecording.getOrPut(guildIdLong){false} && message.contentRaw =="::stop" -> {
