@@ -45,6 +45,7 @@ class InstantReplayCommandHandler : ListenerAdapter() {
 }
 
 class InstantReplayAudioHandler : AudioReceiveHandler {
+    @Suppress("UnstableApiUsage")
     private var buffer = EvictingQueue.create<Byte>(bufferSize)
     override fun canReceiveCombined(): Boolean {
         return true

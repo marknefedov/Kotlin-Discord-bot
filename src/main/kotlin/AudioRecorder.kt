@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.io.File
 import java.time.LocalDateTime
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.schedule
 
 class RecordCommandHandler : ListenerAdapter()
@@ -34,14 +33,14 @@ class RecordCommandHandler : ListenerAdapter()
                     guild.audioManager.openAudioConnection(recordChannel)
                     val splitMessage = message.contentRaw.split(" ")
                     if (splitMessage.size > 1 && splitMessage[1].toLongOrNull() != null) {
-                        scheduleTime = splitMessage[1].toLong() * 1000 // to seconds
-                        scheduleStop(textChannel, scheduleTime)
-                    }else scheduleStop(textChannel, scheduleTime)
-                    val hms = String.format(
-                        "%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(scheduleTime),
-                        TimeUnit.MILLISECONDS.toMinutes(scheduleTime) % TimeUnit.HOURS.toMinutes(1),
-                        TimeUnit.MILLISECONDS.toSeconds(scheduleTime) % TimeUnit.MINUTES.toSeconds(1)
-                    )
+                        val newScheduleTime = splitMessage[1].toLong() * 1000
+                        if (newScheduleTime < recordLengthLimit)
+                            scheduleTime = newScheduleTime
+                        else
+                            event.channel.sendMessage("Requested record is longer than current limit (${toHumanTime(recordLengthLimit)}).").queue()
+                    }
+                    scheduleStop(textChannel, scheduleTime)
+                    val hms = toHumanTime(scheduleTime)
                     event.channel.sendMessage("Starting a $hms long recording. Use `::stop` to stop record earlier.").queue()
                     println("Start recording on ${guild.name} | ${recordChannel?.name}")
                 }
