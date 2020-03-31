@@ -38,14 +38,14 @@ fun main(args : Array<String>) {
     if (!System.getenv("TOPGG_TOKEN").isNullOrEmpty()) {
         topggApi = DiscordBotListAPI.Builder()
             .token(System.getenv("TOPGG_TOKEN"))
-            .botId(System.getenv("CLIENT_ID"))
+            .botId(clientId)
             .build()
         eventListenersToEnable.add(StatsHandler())
     }
 
     JDABuilder(token).apply {
         setCompression(Compression.ZLIB)
-        addEventListeners(eventListenersToEnable)
+        addEventListeners(*eventListenersToEnable.toTypedArray())
         setAutoReconnect(true)
         build()
     }
