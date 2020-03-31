@@ -23,4 +23,7 @@ Configuration using environment variables:
 |:---:|---|
 |BOT_TOKEN|Authentication token from discord developer portal|
 |CLIENT_ID|Client ID from discord developer portal or bot user id|
-|RECORD_LENGTH|Maximum record length in milliseconds. Keep this low on servers with little RAM|
+|RECORD_LENGTH|Maximum record length in milliseconds. Keep this low on servers with little RAM. Default 5 minutes|
+|TOPGG_TOKEN|top.gg bot token for statistics. Optional|
+
+[![Discord Bots](https://top.gg/api/widget/685883762642387005.svg)](https://top.gg/bot/685883762642387005)
