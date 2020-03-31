@@ -1,9 +1,11 @@
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.utils.Compression
-import java.util.concurrent.TimeUnit
+import org.discordbots.api.client.DiscordBotListAPI
+
 
 lateinit var clientId : String
 var recordLengthLimit = 300000L
+lateinit var topggApi : DiscordBotListAPI
 
 fun main(args : Array<String>) {
     val token = when {
@@ -28,22 +30,23 @@ fun main(args : Array<String>) {
         !System.getenv("RECORD_LENGTH").isNullOrEmpty() -> recordLengthLimit = System.getenv("RECORD_LENGTH").toLong()
     }
 
+    val eventListenersToEnable = mutableListOf(
+        RecordCommandHandler(),
+        InstantReplayCommandHandler(),
+        HelpCommand())
+
+    if (!System.getenv("TOPGG_TOKEN").isNullOrEmpty()) {
+        topggApi = DiscordBotListAPI.Builder()
+            .token(System.getenv("TOPGG_TOKEN"))
+            .botId(clientId)
+            .build()
+        eventListenersToEnable.add(StatsHandler())
+    }
+
     JDABuilder(token).apply {
         setCompression(Compression.ZLIB)
-        addEventListeners(
-            RecordCommandHandler(),
-            InstantReplayCommandHandler(),
-            HelpCommand()
-        )
+        addEventListeners(*eventListenersToEnable.toTypedArray())
         setAutoReconnect(true)
         build()
     }
-}
-
-fun toHumanTime(time : Long) : String {
-    return String.format(
-        "%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(time),
-        TimeUnit.MILLISECONDS.toMinutes(time) % TimeUnit.HOURS.toMinutes(1),
-        TimeUnit.MILLISECONDS.toSeconds(time) % TimeUnit.MINUTES.toSeconds(1)
-    )
 }
