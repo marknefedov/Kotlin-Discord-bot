@@ -3,7 +3,6 @@ import ws.schild.jave.AudioAttributes
 import ws.schild.jave.Encoder
 import ws.schild.jave.EncodingAttributes
 import ws.schild.jave.MultimediaObject
-import java.io.ByteArrayInputStream
 import java.io.File
 import javax.sound.sampled.AudioFileFormat
 import javax.sound.sampled.AudioInputStream
@@ -11,13 +10,17 @@ import javax.sound.sampled.AudioSystem
 
 const val tempFolder = "temp"
 
-fun createWAVFile(buffer: Collection<Byte>, filename: String): File {
+fun checkDir()
+{
     val directory = File(tempFolder)
     if (!directory.exists())
         directory.mkdir()
+}
 
+fun createWAVFile(buffer: ByteArray, filename: String): File {
+    checkDir()
     val audioStream = AudioInputStream(
-        ByteArrayInputStream(buffer.toByteArray()),
+        buffer.inputStream(),
         AudioReceiveHandler.OUTPUT_FORMAT,
         buffer.size.toLong()
     )

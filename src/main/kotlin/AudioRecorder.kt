@@ -1,9 +1,7 @@
-import net.dv8tion.jda.api.audio.AudioReceiveHandler
-import net.dv8tion.jda.api.audio.CombinedAudio
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import java.io.File
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.concurrent.schedule
@@ -20,7 +18,7 @@ class RecordCommandHandler : ListenerAdapter()
         val guildIdLong = guild.idLong
         val guildMemberId = event.author.id
         val message = event.message
-        val textChannel = message.textChannel
+        var textChannel : MessageChannel = message.textChannel
         when {
             !isRecording.getOrPut(guildIdLong){false} && message.contentRaw.startsWith("::record") -> {
                 if ((guild.getMemberById(guildMemberId)?.voiceState ?: return).inVoiceChannel())
@@ -39,7 +37,12 @@ class RecordCommandHandler : ListenerAdapter()
                         else
                             event.channel.sendMessage("Requested record is longer than current limit (${toHumanTime(recordLengthLimit)}).").queue()
                     }
-                    scheduleStop(textChannel, scheduleTime)
+                    if (event.message.mentionedMembers.isNotEmpty())
+                    {
+                        val user = event.message.mentionedMembers.first().user
+                        user.openPrivateChannel().queue { textChannel = it }
+                    }
+                    scheduleStop(textChannel, guild, scheduleTime)
                     val hms = toHumanTime(scheduleTime)
                     event.channel.sendMessage("Starting a $hms long recording. Use `::stop` to stop record earlier.").queue()
                     println("Start recording on ${guild.name} | ${recordChannel?.name}")
@@ -47,49 +50,25 @@ class RecordCommandHandler : ListenerAdapter()
             }
             isRecording.getOrPut(guildIdLong){false} && message.contentRaw =="::stop" -> {
                 if ((guild.getMemberById(guildMemberId)?.voiceState ?: return).inVoiceChannel())
-                    stopRecord(textChannel)
+                    stopTask[guild.idLong]?.run()
             }
         }
     }
 
-    private fun stopRecord(textChannel: TextChannel)
+    private fun stopRecord(messageChannel: MessageChannel, guild : Guild)
     {
-        val guildIdLong = textChannel.guild.idLong
-        isRecording[guildIdLong] = false
-        textChannel.guild.audioManager.closeAudioConnection()
-        val filename = LocalDateTime.now().toString() + textChannel.guild.id
-        val record = (recorders[guildIdLong] ?: return).endRecord(filename)
-        textChannel.sendFile(record).queue()
-        record.delete()
-        stopTask[guildIdLong]?.cancel()
+        isRecording[guild.idLong] = false
+        guild.audioManager.closeAudioConnection()
+        val filename = LocalDateTime.now().toString() + guild.id
+        val record = (recorders[guild.idLong] ?: return).endRecord(filename)
+        messageChannel.sendFile(record).submit().thenRunAsync { record.delete() }
+        stopTask[guild.idLong]?.cancel()
     }
 
-    private fun scheduleStop(textChannel: TextChannel, time : Long)
+    private fun scheduleStop(messageChannel: MessageChannel, guild: Guild, time : Long)
     {
-        stopTask[textChannel.guild.idLong] = Timer("Limit records", false).schedule(time) {
-            stopRecord(textChannel)
+        stopTask[guild.idLong] = Timer("Limit records", false).schedule(time) {
+            stopRecord(messageChannel, guild)
         }
-    }
-}
-
-class AudioRecorder : AudioReceiveHandler
-{
-    private var buffer = mutableListOf<Byte>()
-    override fun canReceiveCombined(): Boolean {
-        return true
-    }
-
-    override fun handleCombinedAudio(combinedAudio: CombinedAudio) {
-        super.handleCombinedAudio(combinedAudio)
-        val decodedData = combinedAudio.getAudioData(1.0)
-        buffer.addAll(decodedData.toList())
-    }
-
-    fun endRecord(filename : String) : File
-    {
-        val wav = createWAVFile(buffer, filename)
-        val mp3file = convertToMP3(wav)
-        wav.delete()
-        return mp3file
     }
 }

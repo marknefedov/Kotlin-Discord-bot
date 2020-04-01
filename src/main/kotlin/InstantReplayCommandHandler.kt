@@ -1,12 +1,7 @@
-import com.google.common.collect.EvictingQueue
-import net.dv8tion.jda.api.audio.AudioReceiveHandler
-import net.dv8tion.jda.api.audio.CombinedAudio
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.time.LocalDateTime
-
-const val bufferSize = 25000000
 
 class InstantReplayCommandHandler : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
@@ -41,23 +36,5 @@ class InstantReplayCommandHandler : ListenerAdapter() {
             println("Bot leave from: ${event.channelLeft.name}")
             event.guild.audioManager.receivingHandler = null
         }
-    }
-}
-
-class InstantReplayAudioHandler : AudioReceiveHandler {
-    @Suppress("UnstableApiUsage")
-    private var buffer = EvictingQueue.create<Byte>(bufferSize)
-    override fun canReceiveCombined(): Boolean {
-        return true
-    }
-
-    override fun handleCombinedAudio(combinedAudio: CombinedAudio) {
-        super.handleCombinedAudio(combinedAudio)
-        val decodedData = combinedAudio.getAudioData(1.0)
-        buffer.addAll(decodedData.toTypedArray())
-    }
-
-    fun getRecordBytes(): Collection<Byte> {
-        return buffer
     }
 }

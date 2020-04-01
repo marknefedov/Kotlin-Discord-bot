@@ -1,22 +1,25 @@
 # Voice record Discord bot in Kotlin [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y61K34E)
-![](https://github.com/markusgod/Simple-Discord-bot/workflows/masterci/badge.svg) 
+
+[![Github](https://github.com/markusgod/Simple-Discord-bot/workflows/masterci/badge.svg)](https://github.com/markusgod/Simple-Discord-bot)
 
 A simple bot for recording voice chats.
 
 For simple recording:
 ```
-::record time
+::record | ::record 10
 ::stop
 ```
 After recording bot will send an audio file to the chat it was started from.
 
 ![screenshot-1](https://i.imgur.com/GiSbNbu.png)
 
+To send recording in pm use
+`::record @Someone` or `::record 300 @Someone`, bot will send record to @Someone's private messages.
+
 "Instant replay" functions much like Nvidia's ShadowPlay instant replays (that is where name come from). Bot is constantly recording audio from a channel to a buffer and will send current buffer content in a file when you request it.
-```
-::irecord
-::ireplay
-```
+
+Use `::irecord` to start recording and `::ireplay` to replay buffer.
+
 Configuration using environment variables:
 
 |Variable|Description|

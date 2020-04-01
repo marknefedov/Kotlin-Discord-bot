@@ -33,7 +33,8 @@ fun main(args : Array<String>) {
     val eventListenersToEnable = mutableListOf(
         RecordCommandHandler(),
         InstantReplayCommandHandler(),
-        HelpCommand())
+        HelpCommand()
+        )
 
     if (!System.getenv("TOPGG_TOKEN").isNullOrEmpty()) {
         topggApi = DiscordBotListAPI.Builder()
@@ -43,7 +44,7 @@ fun main(args : Array<String>) {
         eventListenersToEnable.add(StatsHandler())
     }
 
-    JDABuilder(token).apply {
+    JDABuilder.createDefault(token).apply {
         setCompression(Compression.ZLIB)
         addEventListeners(*eventListenersToEnable.toTypedArray())
         setAutoReconnect(true)
