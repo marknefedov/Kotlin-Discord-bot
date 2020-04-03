@@ -1,5 +1,6 @@
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.exceptions.PermissionException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.time.LocalDateTime
 
@@ -13,7 +14,15 @@ class InstantReplayCommandHandler : ListenerAdapter() {
                     audioManager.receivingHandler = InstantReplayAudioHandler()
                 }
                 val recordChannel = event.member?.voiceState?.channel
-                audioManager.openAudioConnection(recordChannel)
+                try {
+                    audioManager.openAudioConnection(recordChannel)
+                }catch (e : PermissionException)
+                {
+                    println(e.toString() + e.message)
+                    e.message?.let { event.message.textChannel.sendMessage(it).queue() }
+                    audioManager.receivingHandler = null
+                    return
+                }
                 println("Start replay recording on ${event.guild.name} | ${recordChannel?.name}")
             }
             event.message.contentRaw =="::ireplay" -> {

@@ -1,6 +1,7 @@
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.exceptions.PermissionException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.time.LocalDateTime
 import java.util.*
@@ -28,7 +29,15 @@ class RecordCommandHandler : ListenerAdapter()
                     isRecording[guildIdLong] = true
                     guild.audioManager.receivingHandler = recorders.getOrPut(guildIdLong){AudioRecorder()}
                     val recordChannel = (guild.getMemberById(guildMemberId)?.voiceState ?: return).channel
-                    guild.audioManager.openAudioConnection(recordChannel)
+                    try {
+                        guild.audioManager.openAudioConnection(recordChannel)
+                    }catch (e : PermissionException)
+                    {
+                        println(e.toString() + e.message)
+                        e.message?.let { event.message.textChannel.sendMessage(it).queue() }
+                        guild.audioManager.receivingHandler = null
+                        return
+                    }
                     val splitMessage = message.contentRaw.split(" ")
                     if (splitMessage.size > 1 && splitMessage[1].toLongOrNull() != null) {
                         val newScheduleTime = splitMessage[1].toLong() * 1000
