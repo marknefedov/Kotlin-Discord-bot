@@ -1,4 +1,5 @@
 import com.google.common.collect.EvictingQueue
+import com.google.common.collect.Queues
 import net.dv8tion.jda.api.audio.AudioReceiveHandler
 import net.dv8tion.jda.api.audio.CombinedAudio
 import java.io.ByteArrayOutputStream
@@ -28,7 +29,7 @@ const val bufferSize = 25000000
 
 class InstantReplayAudioHandler : AudioReceiveHandler {
     @Suppress("UnstableApiUsage")
-    private var buffer = EvictingQueue.create<Byte>(bufferSize)
+    private var buffer = Queues.synchronizedQueue(EvictingQueue.create<Byte>(bufferSize))
     override fun canReceiveCombined() = true
 
     override fun handleCombinedAudio(combinedAudio: CombinedAudio) {
