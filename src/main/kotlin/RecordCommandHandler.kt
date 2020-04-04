@@ -78,7 +78,15 @@ class RecordCommandHandler : ListenerAdapter()
         guild.audioManager.closeAudioConnection()
         val filename = LocalDateTime.now().toString() + guild.id
         val record = (recorders[guild.idLong] ?: return).endRecord(filename)
-        messageChannel.sendFile(record).submit().thenRunAsync { record.delete() }
+        try {
+            messageChannel.sendFile(record).submit().thenRunAsync { record.delete() }
+        }catch (e : PermissionException)
+        {
+            println(e.toString() + e.message)
+            e.message?.let { messageChannel.sendMessage(it).queue() }
+            guild.audioManager.receivingHandler = null
+            return
+        }
         stopTask[guild.idLong]?.cancel()
     }
 

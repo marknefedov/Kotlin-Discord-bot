@@ -41,7 +41,14 @@ class InstantReplayCommandHandler : ListenerAdapter() {
                 )
                 val mp3Compressed = convertToMP3(wavRecord)
                 wavRecord.delete()
+                try {
                 event.message.textChannel.sendFile(mp3Compressed).submit().thenRunAsync { mp3Compressed.delete() }
+                }catch (e : PermissionException) {
+                    println(e.toString() + e.message)
+                    e.message?.let { event.message.textChannel.sendMessage(it).queue() }
+                    event.guild.audioManager.receivingHandler = null
+                    return
+                }
             }
         }
     }
