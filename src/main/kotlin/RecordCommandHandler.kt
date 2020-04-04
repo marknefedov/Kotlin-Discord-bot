@@ -27,7 +27,14 @@ class RecordCommandHandler : ListenerAdapter()
                     var scheduleTime = 300000L
                     stopTask[guildIdLong]?.cancel()
                     isRecording[guildIdLong] = true
-                    guild.audioManager.receivingHandler = recorders.getOrPut(guildIdLong){AudioRecorder()}
+                    try {
+                        guild.audioManager.receivingHandler = recorders.getOrPut(guildIdLong) { AudioRecorder() }
+                    }catch (e : OutOfMemoryError){
+                        println(e.toString() + e.message)
+                        event.message.textChannel.sendMessage("Server is out of memory, try again later").queue()
+                        guild.audioManager.receivingHandler = null
+                        return
+                    }
                     val recordChannel = (guild.getMemberById(guildMemberId)?.voiceState ?: return).channel
                     try {
                         guild.audioManager.openAudioConnection(recordChannel)

@@ -11,7 +11,14 @@ class InstantReplayCommandHandler : ListenerAdapter() {
         when {
             event.message.contentRaw == "::irecord" && event.member?.voiceState?.inVoiceChannel() == true -> {
                 if (audioManager.receivingHandler == null) {
-                    audioManager.receivingHandler = InstantReplayAudioHandler()
+                    try {
+                        audioManager.receivingHandler = InstantReplayAudioHandler()
+                    }catch (e : OutOfMemoryError){
+                        println(e.toString() + e.message)
+                        event.message.textChannel.sendMessage("Server is out of memory, try again later").queue()
+                        event.guild.audioManager.receivingHandler = null
+                        return
+                    }
                 }
                 val recordChannel = event.member?.voiceState?.channel
                 try {
