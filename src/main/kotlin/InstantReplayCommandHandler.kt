@@ -17,6 +17,7 @@ class InstantReplayCommandHandler : ListenerAdapter() {
                         println(e.toString() + e.message)
                         event.message.textChannel.sendMessage("Server is out of memory, try again later").queue()
                         event.guild.audioManager.receivingHandler = null
+                        System.gc()
                         return
                     }
                 }
