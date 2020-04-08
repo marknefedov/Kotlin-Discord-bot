@@ -50,6 +50,9 @@ class InstantReplayCommandHandler : ListenerAdapter() {
                     return
                 }
             }
+            event.message.contentRaw == "::istop" ->{
+                event.guild.audioManager.closeAudioConnection()
+            }
         }
     }
 

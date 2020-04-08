@@ -18,7 +18,7 @@ To send recording in pm use
 
 "Instant replay" functions much like Nvidia's ShadowPlay instant replays (that is where name come from). Bot is constantly recording audio from a channel to a buffer and will send current buffer content in a file when you request it.
 
-Use `::irecord` to start recording and `::ireplay` to replay buffer.
+Use `::irecord` to start recording and `::ireplay` to replay buffer, and `::istop` to kick it.
 
 Configuration using environment variables:
 
