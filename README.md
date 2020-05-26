@@ -5,7 +5,7 @@
 A simple bot for recording voice chats.
 
 For simple recording:
-```
+```text
 ::record | ::record 10
 ::stop
 ```

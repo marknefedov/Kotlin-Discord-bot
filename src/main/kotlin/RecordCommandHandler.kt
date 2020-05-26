@@ -33,7 +33,6 @@ class RecordCommandHandler : ListenerAdapter()
                         println(e.toString() + e.message)
                         event.message.textChannel.sendMessage("Server is out of memory, try again later").queue()
                         guild.audioManager.receivingHandler = null
-                        System.gc()
                         return
                     }
                     val recordChannel = (guild.getMemberById(guildMemberId)?.voiceState ?: return).channel
