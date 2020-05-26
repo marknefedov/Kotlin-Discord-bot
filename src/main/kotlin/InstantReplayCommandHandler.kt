@@ -6,7 +6,6 @@ import java.time.LocalDateTime
 
 class InstantReplayCommandHandler : ListenerAdapter() {
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-        super.onGuildMessageReceived(event)
         val audioManager = event.guild.audioManager
         when {
             event.message.contentRaw == "::irecord" && event.member?.voiceState?.inVoiceChannel() == true -> {

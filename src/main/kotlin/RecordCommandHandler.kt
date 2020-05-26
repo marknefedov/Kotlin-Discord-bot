@@ -14,7 +14,6 @@ class RecordCommandHandler : ListenerAdapter()
     private var stopTask = mutableMapOf<Long, TimerTask?>()
 
     override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-        super.onGuildMessageReceived(event)
         val guild = event.guild
         val guildIdLong = guild.idLong
         val guildMemberId = event.author.id
