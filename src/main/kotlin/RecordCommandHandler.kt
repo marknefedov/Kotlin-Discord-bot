@@ -47,14 +47,7 @@ class RecordCommandHandler : ListenerAdapter()
             guild.audioManager.receivingHandler = null
             return
         }
-        val splitMessage = message.contentRaw.split(" ")
-        if (splitMessage.size > 1 && splitMessage[1].toLongOrNull() != null) {
-            val newScheduleTime = splitMessage[1].toLong() * 1000
-            if (newScheduleTime < recordLengthLimit)
-                scheduleTime = newScheduleTime
-            else
-                event.channel.sendMessage("Requested record is longer than current limit (${toHumanTime(recordLengthLimit)}).").queue()
-        }
+        scheduleTime = tryGetRecordTime(message, scheduleTime, event)
         if (event.message.mentionedMembers.isNotEmpty()) {
             val user = event.message.mentionedMembers.first().user
             user.openPrivateChannel().queue { sendTextChannel = it }
@@ -62,6 +55,19 @@ class RecordCommandHandler : ListenerAdapter()
         scheduleStop(sendTextChannel, guild, scheduleTime)
         val hms = toHumanTime(scheduleTime)
         event.channel.sendMessage("Starting a $hms long recording. Use `::stop` to stop record earlier.").queue()
+    }
+
+    private fun tryGetRecordTime(message: Message, scheduleTime: Long, event: GuildMessageReceivedEvent): Long {
+        var resultTime = scheduleTime
+        val splitMessage = message.contentRaw.split(" ")
+        if (splitMessage.size > 1 && splitMessage[1].toLongOrNull() != null) {
+            val newScheduleTime = splitMessage[1].toLong() * 1000
+            if (newScheduleTime < recordLengthLimit)
+                resultTime = newScheduleTime
+            else
+                event.channel.sendMessage("Requested record is longer than current limit (${toHumanTime(recordLengthLimit)}).").queue()
+        }
+        return resultTime
     }
 
     private fun stopRecord(messageChannel: MessageChannel, guild : Guild)
