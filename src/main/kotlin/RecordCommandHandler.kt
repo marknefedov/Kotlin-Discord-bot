@@ -44,8 +44,6 @@ class RecordCommandHandler : ListenerAdapter()
         try {
             guild.audioManager.openAudioConnection(recordChannel)
         } catch (e: PermissionException) {
-            println(e.toString() + e.message)
-            e.message?.let { event.message.textChannel.sendMessage(it).queue() }
             guild.audioManager.receivingHandler = null
             return
         }
