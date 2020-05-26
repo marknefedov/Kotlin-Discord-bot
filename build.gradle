@@ -12,9 +12,9 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation 'com.github.DV8FromTheWorld:JDA:development-SNAPSHOT'
+    compile "com.github.DV8FromTheWorld:JDA:development-SNAPSHOT"
     compile group: 'ws.schild', name: 'jave-all-deps', version: '2.7.3'
-    implementation("com.google.guava:guava:28.2-jre")
+    compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     implementation 'com.github.DiscordBotList:DBL-Java-Library:2.0.1'
 }
