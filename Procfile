@@ -1,1 +1,1 @@
-worker: java -jar build/libs/DiscordBot-master.jar
+worker: java -Xmx2G -jar build/libs/DiscordBot-master.jar
