@@ -1,4 +1,4 @@
-# Voice record Discord bot in Kotlin [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y61K34E)
+# Voice record Discord bot in Kotlin
 
 [![Github](https://github.com/markusgod/Simple-Discord-bot/workflows/masterci/badge.svg)](https://github.com/markusgod/Simple-Discord-bot) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/a8e4ff8a29494134abcd18cfa258ccb7)](https://www.codacy.com/manual/markusgod/Kotlin-Discord-bot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=markusgod/Kotlin-Discord-bot&amp;utm_campaign=Badge_Grade)
 
