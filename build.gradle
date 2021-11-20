@@ -7,12 +7,16 @@ version 'master'
 repositories {
     mavenCentral()
     jcenter()
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile "com.github.DV8FromTheWorld:JDA:development-SNAPSHOT"
+    implementation("net.dv8tion:JDA:4.3.0_277")
     compile group: 'ws.schild', name: 'jave-all-deps', version: '2.7.3'
     compile group: 'com.google.guava', name: 'guava', version: '29.0-jre'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
